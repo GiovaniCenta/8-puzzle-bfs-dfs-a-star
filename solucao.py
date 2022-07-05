@@ -1,6 +1,6 @@
 
 
-estado_inicial = "1_2345678"
+estado_inicial = "123456_78"
 lista_nodos = []
 lista_esq = []
 lista_dir = []
@@ -42,7 +42,7 @@ def sucessor(estado):
     # substituir a linha abaixo pelo seu codigo
 
     #implementada com as funções esquerda, direita, abaixo (la em baixo no código)
-    return [("esquerda",esquerda(estado)), ("direita",direita(estado)),("abaixo",abaixo(estado))]
+    return [("esquerda",esquerda(estado)), ("direita",direita(estado)),("abaixo",abaixo(estado)),("acima",acima(estado))]
     
 
 
@@ -72,11 +72,13 @@ def expande(nodo):
     suc_esq = sucessor(nodo.estado)[0]
     suc_dir = sucessor(nodo.estado)[1]
     suc_abaixo = sucessor(nodo.estado)[2]
+    suc_acima = sucessor(nodo.estado)[3]
         
         #criar os nodos que seram colocados na lista de nodos sucessores
     esquerda = Nodo(suc_esq[1],nodo,suc_esq[0],custo+1)
     abaixo = Nodo(suc_abaixo[1],nodo,suc_abaixo[0],custo+1)
     direita = Nodo(suc_dir[1],nodo,suc_dir[0],custo+1)
+    acima = Nodo(suc_acima[1],nodo,suc_acima[0],custo+1)
             
         
 
@@ -87,6 +89,7 @@ def expande(nodo):
     lista_nodos.append(esquerda)
     lista_nodos.append(abaixo)
     lista_nodos.append(direita)
+    lista_nodos.append(acima)
     
         
         
@@ -281,9 +284,23 @@ def abaixo(estado):
         estado = ''.join(estado)
         return str(estado)
 
+def acima(estado):
+    i = estado.find("_")
+    if(i == 0 or i == 1 or i == 2):
+        estado = ''.join(estado)
+        return str(estado)
+    else:
+        estado = list(estado)
+        aux = estado[i]
+        aux2 = estado[i-3]
+        estado[i] = aux2
+        estado[i-3] = aux
+        estado = ''.join(estado)
+        return str(estado)
+
 
 if __name__ == "__main__":
   nodo_inicial = Nodo(estado_inicial,0,0,0)
-  bfs_nodes=dfs(estado_inicial)
+  bfs_nodes=bfs(estado_inicial)
   for n in bfs_nodes:
     n.print_nodo()
