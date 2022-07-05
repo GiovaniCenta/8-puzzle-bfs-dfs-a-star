@@ -65,35 +65,29 @@ def expande(nodo):
 
 
     #não sei o que fazer quando não tem mais sucessores
-    while nodo.estado!="_1234567":
+    while custo > -1:
         #retirar da lista de tuplas da funcao sucessor
-        if sucessor(nodo.estado):
-            suc_esq = sucessor(nodo.estado)[0]
-            suc_dir = sucessor(nodo.estado)[1]
-            suc_abaixo = sucessor(nodo.estado)[2]
+        
+        #inicial - "2_3541687"
+
+        suc_esq = sucessor(nodo.estado)[0]
+        suc_dir = sucessor(nodo.estado)[1]
+        suc_abaixo = sucessor(nodo.estado)[2]
         
         #criar os nodos que seram colocados na lista de nodos sucessores
-            esquerda = Nodo(suc_esq[1],nodo,suc_esq[0],custo+1)
-            abaixo = Nodo(suc_abaixo[1],nodo,suc_abaixo[0],custo+1)
-            direita = Nodo(suc_dir[1],nodo,suc_dir[0],custo+1)
+        esquerda = Nodo(suc_esq[1],nodo,suc_esq[0],custo+1)
+        abaixo = Nodo(suc_abaixo[1],nodo,suc_abaixo[0],custo+1)
+        direita = Nodo(suc_dir[1],nodo,suc_dir[0],custo+1)
             
-            print(nodo.estado)
+        custo=custo-1
 
-        i = nodo.estado.find("_")
-        nodo.estado = list(nodo.estado)
-        if(i != 0 and i != 3 and i != 6):  #nessas posições não vai mais para esquerda
-            lista_esq.append(expande(esquerda))
-        if(i != 6 and i != 7 and i != 8):  #nessas posições não vai mais para baixo 
-            lista_abaixo.append(expande(abaixo))
-        if(i != 2 and i != 5 and i != 8):  #nessas posições não vai mais para direita   
-            lista_dir.append(expande(direita))
-        
+  
 
         
         #colocar na lista
-            lista_nodos.append(lista_esq)
-            lista_nodos.append(lista_dir)
-            lista_nodos.append(lista_abaixo)
+        lista_nodos.append(esquerda)
+        lista_nodos.append(direita)
+        lista_nodos.append(abaixo)
         
         
 
@@ -125,15 +119,18 @@ def bfs(estado):
     
     while fila:          # Creating loop to visit each node
         m = fila.pop(0) 
-        print (m, end = " ") 
-        lista_sucessores = expande(m)
+        if m.estado!="_12345678":
+            m.print_nodo()
+            lista_sucessores = expande(m)
         
-        for sucessor in lista_sucessores:
-            if sucessor not in visitado:
-                visitado.append(sucessor)
-                fila.append(sucessor)
-        print("\n\nfila: ")
-        print(fila)
+            for sucessor in lista_sucessores:
+                if sucessor not in visitado:
+                    visitado.append(sucessor)
+                    fila.append(sucessor)
+        else:
+            break
+        
+        
         
         
         
@@ -234,4 +231,4 @@ def abaixo(estado):
 
 if __name__ == "__main__":
     nodo_inicial = Nodo(estado_inicial,0,0,0)
-    expande(nodo_inicial)
+    bfs(estado_inicial)
