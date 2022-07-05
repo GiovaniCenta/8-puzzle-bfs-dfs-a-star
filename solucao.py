@@ -1,6 +1,6 @@
 
 
-estado_inicial = "123456_78"
+estado_inicial = "12345678_"
 lista_nodos = []
 lista_esq = []
 lista_dir = []
@@ -87,8 +87,8 @@ def expande(nodo):
         
         #colocar na lista
     lista_nodos.append(esquerda)
-    lista_nodos.append(abaixo)
     lista_nodos.append(direita)
+    lista_nodos.append(abaixo)
     lista_nodos.append(acima)
     
         
@@ -151,7 +151,7 @@ def bfs(estado):
           
           lista_sucessores = expande(v)
           
-          for sucessor in lista_sucessores:
+          for sucessor in reversed(lista_sucessores):
               if sucessor not in visitado:
                   visitado.append(sucessor)
                   fila.put(sucessor)
@@ -203,7 +203,7 @@ def dfs(estado):
             visitados.append(v)
             lista_sucessores = expande(v)
         
-        for sucessor in lista_sucessores:
+        for sucessor in reversed(lista_sucessores):
           S.append(sucessor)
       
   
