@@ -1,7 +1,6 @@
-from collections import deque
-import numpy as np
 
-estado_inicial = "2_3541687"
+
+estado_inicial = "1_2345678"
 lista_nodos = []
 lista_esq = []
 lista_dir = []
@@ -65,29 +64,30 @@ def expande(nodo):
 
 
     #não sei o que fazer quando não tem mais sucessores
-    while custo > -1:
+    
         #retirar da lista de tuplas da funcao sucessor
         
         #inicial - "2_3541687"
 
-        suc_esq = sucessor(nodo.estado)[0]
-        suc_dir = sucessor(nodo.estado)[1]
-        suc_abaixo = sucessor(nodo.estado)[2]
+    suc_esq = sucessor(nodo.estado)[0]
+    suc_dir = sucessor(nodo.estado)[1]
+    suc_abaixo = sucessor(nodo.estado)[2]
         
         #criar os nodos que seram colocados na lista de nodos sucessores
-        esquerda = Nodo(suc_esq[1],nodo,suc_esq[0],custo+1)
-        abaixo = Nodo(suc_abaixo[1],nodo,suc_abaixo[0],custo+1)
-        direita = Nodo(suc_dir[1],nodo,suc_dir[0],custo+1)
+    esquerda = Nodo(suc_esq[1],nodo,suc_esq[0],custo+1)
+    abaixo = Nodo(suc_abaixo[1],nodo,suc_abaixo[0],custo+1)
+    direita = Nodo(suc_dir[1],nodo,suc_dir[0],custo+1)
             
-        custo=custo-1
+        
 
   
 
         
         #colocar na lista
-        lista_nodos.append(esquerda)
-        lista_nodos.append(direita)
-        lista_nodos.append(abaixo)
+    lista_nodos.append(esquerda)
+    lista_nodos.append(abaixo)
+    lista_nodos.append(direita)
+    
         
         
 
@@ -107,28 +107,53 @@ def bfs(estado):
     Caso não haja solução a partir do estado recebido, retorna None
     :param estado: str
     :return:
+
+     1  procedure BFS(G, root) is
+ 2      let Q be a queue
+ 3      label root as explored
+ 4      Q.enqueue(root)
+ 5      while Q is not empty do
+ 6          v := Q.dequeue()
+ 7          if v is the goal then
+ 8              return v
+ 9          for all edges from v to w in G.adjacentEdges(v) do
+10              if w is not labeled as explored then
+11                  label w as explored
+12                  Q.enqueue(w)
+    
     """
     # substituir a linha abaixo pelo seu codigo
+
+    import queue
+
+    fila = queue.Queue()
+  
     visitado = []
-    fila = []
+    
+
     nodo_inicial = Nodo(estado,0,0,0)
-    fila.append(nodo_inicial)
+    fila.put(nodo_inicial)
+    
     visitado.append(nodo_inicial)
-    print(fila)
+    #print(fila)
     
     
     while fila:          # Creating loop to visit each node
-        m = fila.pop(0) 
-        if m.estado!="_12345678":
-            m.print_nodo()
-            lista_sucessores = expande(m)
-        
-            for sucessor in lista_sucessores:
-                if sucessor not in visitado:
-                    visitado.append(sucessor)
-                    fila.append(sucessor)
+        v = fila.get()
+        print(v.estado)
+        if v.estado == "_12345678":
+            return visitado
+            
         else:
-            break
+          
+          lista_sucessores = expande(v)
+          
+          for sucessor in lista_sucessores:
+              if sucessor not in visitado:
+                  visitado.append(sucessor)
+                  fila.put(sucessor)
+        
+            
         
         
         
@@ -148,13 +173,41 @@ def dfs(estado):
     Caso não haja solução a partir do estado recebido, retorna None
     :param estado: str
     :return:
-    """
+
+
     # substituir a linha abaixo pelo seu codigo
     raise NotImplementedError
+  
+  procedure DFS_iterative(G, v) is
+    let S be a stack
+    S.push(v)
+    while S is not empty do
+        v = S.pop()
+        if v is not labeled as discovered then
+            label v as discovered
+            for all edges from v to w in G.adjacentEdges(v) do 
+                S.push(w)
 
-
+"""
+    S = []
+    visitados = []
+    nodo_inicial = Nodo(estado,0,0,0)
+    S.append(nodo_inicial)
+    while S:
+        v = S.pop()
+        print(v.estado)
+        if v not in visitados:
+            visitados.append(v)
+            lista_sucessores = expande(v)
+        
+        for sucessor in lista_sucessores:
+          S.append(sucessor)
+      
+  
+  
+  
 def astar_hamming(estado):
-    """
+    """"
     Recebe um estado (string), executa a busca A* com h(n) = soma das distâncias de Hamming e
     retorna uma lista de ações que leva do
     estado recebido até o objetivo ("12345678_").
@@ -230,5 +283,7 @@ def abaixo(estado):
 
 
 if __name__ == "__main__":
-    nodo_inicial = Nodo(estado_inicial,0,0,0)
-    bfs(estado_inicial)
+  nodo_inicial = Nodo(estado_inicial,0,0,0)
+  bfs_nodes=dfs(estado_inicial)
+  for n in bfs_nodes:
+    n.print_nodo()
