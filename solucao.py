@@ -2,6 +2,10 @@ from collections import deque
 import numpy as np
 
 estado_inicial = "2_3541687"
+lista_nodos = []
+lista_esq = []
+lista_dir = []
+lista_abaixo = []
 
 class Nodo:
     
@@ -54,32 +58,47 @@ def expande(nodo):
     dir=
     abaixo= 
     """
-    lista_nodos = []
+    
     #custo_filho = nodo.custo
     
     custo = nodo.custo
 
 
     #não sei o que fazer quando não tem mais sucessores
-    while custo >= 0:
+    while nodo.estado!="_1234567":
         #retirar da lista de tuplas da funcao sucessor
-        suc_esq = sucessor(nodo.estado)[0]
-        suc_dir = sucessor(nodo.estado)[1]
-        suc_abaixo = sucessor(nodo.estado)[2]
+        if sucessor(nodo.estado):
+            suc_esq = sucessor(nodo.estado)[0]
+            suc_dir = sucessor(nodo.estado)[1]
+            suc_abaixo = sucessor(nodo.estado)[2]
         
         #criar os nodos que seram colocados na lista de nodos sucessores
-        esquerda = Nodo(suc_esq[1],nodo,suc_esq[0],custo+1)
-        direita = Nodo(suc_dir[1],nodo,suc_dir[0],custo+1)
-        abaixo = Nodo(suc_abaixo[1],nodo,suc_abaixo[0],custo+1)
+            esquerda = Nodo(suc_esq[1],nodo,suc_esq[0],custo+1)
+            abaixo = Nodo(suc_abaixo[1],nodo,suc_abaixo[0],custo+1)
+            direita = Nodo(suc_dir[1],nodo,suc_dir[0],custo+1)
+            
+            print(nodo.estado)
+
+        i = nodo.estado.find("_")
+        nodo.estado = list(nodo.estado)
+        if(i != 0 and i != 3 and i != 6):  #nessas posições não vai mais para esquerda
+            lista_esq.append(expande(esquerda))
+        if(i != 6 and i != 7 and i != 8):  #nessas posições não vai mais para baixo 
+            lista_abaixo.append(expande(abaixo))
+        if(i != 2 and i != 5 and i != 8):  #nessas posições não vai mais para direita   
+            lista_dir.append(expande(direita))
+        
+
         
         #colocar na lista
-        lista_nodos.append(esquerda)
-        lista_nodos.append(direita)
-        lista_nodos.append(abaixo)
-        custo = custo - 1
+            lista_nodos.append(lista_esq)
+            lista_nodos.append(lista_dir)
+            lista_nodos.append(lista_abaixo)
+        
+        
 
         #teria que fazer isso para todos os sucessores?
-        
+
 
 
 
@@ -96,7 +115,32 @@ def bfs(estado):
     :return:
     """
     # substituir a linha abaixo pelo seu codigo
-    raise NotImplementedError
+    visitado = []
+    fila = []
+    nodo_inicial = Nodo(estado,0,0,0)
+    fila.append(nodo_inicial)
+    visitado.append(nodo_inicial)
+    print(fila)
+    
+    
+    while fila:          # Creating loop to visit each node
+        m = fila.pop(0) 
+        print (m, end = " ") 
+        lista_sucessores = expande(m)
+        
+        for sucessor in lista_sucessores:
+            if sucessor not in visitado:
+                visitado.append(sucessor)
+                fila.append(sucessor)
+        print("\n\nfila: ")
+        print(fila)
+        
+        
+        
+    print(visitado)
+    
+
+
 
 
 def dfs(estado):
@@ -143,49 +187,51 @@ def astar_manhattan(estado):
 def esquerda(estado):
     i = estado.find("_")
     estado = list(estado)
-    if(i-1 < 0):
-        aux = estado[i]
-        aux2 = estado[len(estado)]
-        estado[i] = aux2
-        estado[len(estado)] = aux
+    if(i == 0 or i == 3 or i == 6):  #nessas posições não vai mais para esquerda
+        estado = ''.join(estado)
+        return str(estado)
+        
     else:
         aux = estado[i]
         aux2 = estado[i-1]
         estado[i] = aux2
         estado[i-1] = aux
         estado = ''.join(estado)
-    return str(estado)
+        return str(estado)
+    
 
 
 def direita(estado):
     i = estado.find("_")
     estado = list(estado)
-    if(i+1 > len(estado)):
-        aux = estado[i]
-        aux2 = estado[0]
-        estado[i] = aux2
-        estado[0] = aux
+    if(i == 2 or i == 5 or i == 8):
+        estado = ''.join(estado)
+        return str(estado)
+        
     else:
         aux = estado[i]
         aux2 = estado[i+1]
         estado[i] = aux2
         estado[i+1] = aux
         estado = ''.join(estado)
-    return str(estado)
+        return str(estado)
 
 #não sei se ta certa
 def abaixo(estado):
     i = estado.find("_")
-    estado = list(estado)
-    aux = estado[i]
-    aux2 = estado[i+3]
-    estado[i] = aux2
-    estado[i+3] = aux
-    estado = ''.join(estado)
-    return str(estado)
+    if(i == 6 or i == 7 or i == 8):
+        estado = ''.join(estado)
+        return str(estado)
+    else:
+        estado = list(estado)
+        aux = estado[i]
+        aux2 = estado[i+3]
+        estado[i] = aux2
+        estado[i+3] = aux
+        estado = ''.join(estado)
+        return str(estado)
 
 
 if __name__ == "__main__":
-    node = Nodo(estado_inicial,0,0,0)
-    x =expande(node)
-    x[0].print_nodo()
+    nodo_inicial = Nodo(estado_inicial,0,0,0)
+    expande(nodo_inicial)
