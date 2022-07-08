@@ -234,6 +234,7 @@ def acima(Lestado,posunderline):
 
 if __name__ == "__main__":
   nodo_inicial = Nodo(estado_inicial,0,0,0)
+  
   bfs_nodes=bfs(estado_inicial)
   dfs_nodes=dfs(estado_inicial)
   #for n in bfs_nodes:
