@@ -44,7 +44,7 @@ class TestaSolucao(unittest.TestCase):
         self.assertEqual(23, len(solucao.bfs("2_3541687")))
         print("Atencao! O BFS passar nesse teste apenas significa que a lista retornada tem o "
               "numero correto de elementos. Nao verificamos se as acoes levam para a solucao!")
-        exit(8)
+        
 
         # nao ha solucao a partir do estado 185423_67
         self.assertIsNone(solucao.bfs("185423_67"))
