@@ -11,13 +11,7 @@ class Nodo:
    
 
     def __init__(self, estado, pai, acao, custo):
-        """
-        Inicializa o nodo com os atributos recebidos
-        :param estado:str, representacao do estado do 8-puzzle
-        :param pai:Nodo, referencia ao nodo pai, (None no caso do nó raiz)
-        :param acao:str, acao a partir do pai que leva a este nodo (None no caso do nó raiz)
-        :param custo:int, custo do caminho da raiz até este nó
-        """
+     
         self.estado = estado
         self.pai = pai
         self.acao = acao
@@ -34,8 +28,10 @@ def achaunderline(Lestado):
     return Lestado.index("_")
 
 def sucessor(estado):
+    #tem que transformar em lista, problemas com string
     Lestado = list(estado)
     sucessores = [esquerda(Lestado,achaunderline(Lestado)), direita(Lestado,achaunderline(Lestado)),acima(Lestado,achaunderline(Lestado)),abaixo(Lestado,achaunderline(Lestado))]
+    #retirar os Nones -> movimentos inválidos
     sucessores = list(filter(None, sucessores))
     
 
@@ -53,12 +49,6 @@ def expande(nodo):
         custo = nodo.custo+1
         nodoSucessor = Nodo(estado,pai,acao,custo)
         lista_nodos.append(nodoSucessor)
-
-    
-
-
-
-
     return lista_nodos
 
 
@@ -67,12 +57,8 @@ def bfs(estado):
     t1 = time.time()
     Nexpandidos = 0
     fronteira = []
-  
     explorado = set()
-    
     nodo_inicial = Nodo(estado,None,None,1)
-
-    
     fronteira.append(nodo_inicial)
     
     
@@ -85,7 +71,7 @@ def bfs(estado):
 
         if nodoAtual.estado == "12345678_":
             caminho = percorreCaminho(nodoAtual)
-            print(caminho)
+            #print(caminho)
             t2 = time.time()
             tempo = t2 - t1
             algoritmo = "BFS"
@@ -126,28 +112,41 @@ def printa_resultado(algoritmo,tempo,Nexpandidos,custo):
         
         
     
+      
+def dfs(estado):
+    t1= time.time()
+    NExpandidos = 0
+    pilha = []
+    expandidos = set()
+    nodoAtual = Nodo(estado,None,None,1)
+    expandidos.add(nodoAtual.estado)
     
 
+    #tem que fazer a funçao de ve se tem solução ou não
+
+    while True:
+        sucessores = expande(nodoAtual)
+        NExpandidos = NExpandidos + len(sucessores)
 
 
+        for suc in sucessores:
+            if suc.estado not in expandidos:
+                pilha.append(suc)
 
-def dfs(estado):
-  
-    S = []
-    explorados = []
-    nodo_inicial = Nodo(estado,0,0,0)
-    S.append(nodo_inicial)
-    while S:
-        v = S.pop()
-        print(v.estado)
-        if v not in explorados:
-            explorados.append(v)
-            lista_sucessores = expande(v)
         
-        for sucessor in reversed(lista_sucessores):
-          S.append(sucessor)
-      
-  
+        nodoAtual = pilha.pop()
+        expandidos.add(nodoAtual.estado)
+        
+
+        if(nodoAtual.estado == "12345678_"):
+            caminho = percorreCaminho(nodoAtual)
+            #print(caminho)
+            t2 = time.time()
+            tempo = t2 - t1
+            algoritmo = "DFS"
+            custo = len(caminho)
+            printa_resultado(algoritmo,tempo,NExpandidos,custo)
+            return caminho
   
   
 def astar_hamming(estado):
@@ -236,5 +235,6 @@ def acima(Lestado,posunderline):
 if __name__ == "__main__":
   nodo_inicial = Nodo(estado_inicial,0,0,0)
   bfs_nodes=bfs(estado_inicial)
+  dfs_nodes=dfs(estado_inicial)
   #for n in bfs_nodes:
   #  n.print_nodo()
