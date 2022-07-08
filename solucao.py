@@ -1,6 +1,6 @@
 
-
-estado_inicial = "12345678_"
+import time
+estado_inicial = "2_3541687"
 lista_nodos = []
 lista_esq = []
 lista_dir = []
@@ -30,71 +30,31 @@ class Nodo:
         print("===================")
         
 
+def achaunderline(Lestado):
+    return Lestado.index("_")
 
 def sucessor(estado):
-    """
-    Recebe um estado (string) e retorna uma lista de tuplas (ação,estado atingido)
-    para cada ação possível no estado recebido.
-    Tanto a ação quanto o estado atingido são strings também.
-    :param estado:
-    :return:
-    """
-    # substituir a linha abaixo pelo seu codigo
+    Lestado = list(estado)
+    sucessores = [esquerda(Lestado,achaunderline(Lestado)), direita(Lestado,achaunderline(Lestado)),acima(Lestado,achaunderline(Lestado)),abaixo(Lestado,achaunderline(Lestado))]
+    sucessores = list(filter(None, sucessores))
+    
 
-    #implementada com as funções esquerda, direita, abaixo (la em baixo no código)
-    return [("esquerda",esquerda(estado)), ("direita",direita(estado)),("abaixo",abaixo(estado)),("acima",acima(estado))]
+    return sucessores
     
 
 
 def expande(nodo):
-    """
-    Recebe um nodo (objeto da classe Nodo) e retorna um iterable de nodos.
-    Cada nodo do iterable é contém um estado sucessor do nó recebido.
-    :param nodo: objeto da classe Nodo
-    :return:
+    lista_nodos = []
+    sucessores = sucessor(nodo.estado)
+    for suc in sucessores:
+        acao = suc[0]
+        estado = suc[1]
+        pai = nodo
+        custo = nodo.custo+1
+        nodoSucessor = Nodo(estado,pai,acao,custo)
+        lista_nodos.append(nodoSucessor)
+
     
-    esq=Nodo(sucessor(nodo.estado),nodo, )
-    dir=
-    abaixo= 
-    """
-    
-    #custo_filho = nodo.custo
-    
-    custo = nodo.custo
-
-
-    #não sei o que fazer quando não tem mais sucessores
-    
-        #retirar da lista de tuplas da funcao sucessor
-        
-        #inicial - "2_3541687"
-
-    suc_esq = sucessor(nodo.estado)[0]
-    suc_dir = sucessor(nodo.estado)[1]
-    suc_abaixo = sucessor(nodo.estado)[2]
-    suc_acima = sucessor(nodo.estado)[3]
-        
-        #criar os nodos que seram colocados na lista de nodos sucessores
-    esquerda = Nodo(suc_esq[1],nodo,suc_esq[0],custo+1)
-    abaixo = Nodo(suc_abaixo[1],nodo,suc_abaixo[0],custo+1)
-    direita = Nodo(suc_dir[1],nodo,suc_dir[0],custo+1)
-    acima = Nodo(suc_acima[1],nodo,suc_acima[0],custo+1)
-            
-        
-
-  
-
-        
-        #colocar na lista
-    lista_nodos.append(esquerda)
-    lista_nodos.append(direita)
-    lista_nodos.append(abaixo)
-    lista_nodos.append(acima)
-    
-        
-        
-
-        #teria que fazer isso para todos os sucessores?
 
 
 
@@ -103,104 +63,85 @@ def expande(nodo):
 
 
 def bfs(estado):
-    """
-    Recebe um estado (string), executa a busca em LARGURA e
-    retorna uma lista de ações que leva do
-    estado recebido até o objetivo ("12345678_").
-    Caso não haja solução a partir do estado recebido, retorna None
-    :param estado: str
-    :return:
-
-     1  procedure BFS(G, root) is
- 2      let Q be a queue
- 3      label root as explored
- 4      Q.enqueue(root)
- 5      while Q is not empty do
- 6          v := Q.dequeue()
- 7          if v is the goal then
- 8              return v
- 9          for all edges from v to w in G.adjacentEdges(v) do
-10              if w is not labeled as explored then
-11                  label w as explored
-12                  Q.enqueue(w)
     
-    """
-    # substituir a linha abaixo pelo seu codigo
-
-    import queue
-
-    fila = queue.Queue()
+    t1 = time.time()
+    Nexpandidos = 0
+    fronteira = []
   
-    visitado = []
+    explorado = set()
     
+    nodo_inicial = Nodo(estado,None,None,1)
 
-    nodo_inicial = Nodo(estado,0,0,0)
-    fila.put(nodo_inicial)
     
-    visitado.append(nodo_inicial)
-    #print(fila)
+    fronteira.append(nodo_inicial)
     
     
-    while fila:          # Creating loop to visit each node
-        v = fila.get()
-        print(v.estado)
-        if v.estado == "_12345678":
-            return visitado
+    #print(fronteira)
+    
+    
+    while fronteira:          # Creating loop to visit each node
+        nodoAtual = fronteira[0]
+        fronteira.pop(0)
+
+        if nodoAtual.estado == "12345678_":
+            caminho = percorreCaminho(nodoAtual)
+            print(caminho)
+            t2 = time.time()
+            tempo = t2 - t1
+            algoritmo = "BFS"
+            custo = len(caminho)
+            printa_resultado(algoritmo,tempo,Nexpandidos,custo)
+            return caminho
+
             
-        else:
-          
-          lista_sucessores = expande(v)
-          
-          for sucessor in reversed(lista_sucessores):
-              if sucessor not in visitado:
-                  visitado.append(sucessor)
-                  fila.put(sucessor)
-        
             
+        if nodoAtual.estado not in explorado:
+            explorado.add(nodoAtual.estado)
+            sucessores = expande(nodoAtual)
+            Nexpandidos = Nexpandidos + len(sucessores)
+            #for suc in sucessores:
+            #    fronteira.append(suc)
+            fronteira.extend(sucessores)
+            
+
+def percorreCaminho(nodoAtual):
+    caminho =[]
+    
+    while nodoAtual.pai:
+        #print("entrou aqui")
+        #inserir no começo da lista pra ter a ordem certa
+        caminho.insert(0,nodoAtual.acao)
+        nodoAtual = nodoAtual.pai
+    return caminho
+        
+def printa_resultado(algoritmo,tempo,Nexpandidos,custo):
+    print("===== Algoritmo " + str(algoritmo) + "=====")
+    print("Tempo de exec: " + str(tempo))
+    print("Numero de nós expandidos: " + str(Nexpandidos))
+    print("Custo: " + str(custo))
+            
+
         
         
         
         
-        
-    print(visitado)
+    
     
 
 
 
 
 def dfs(estado):
-    """
-    Recebe um estado (string), executa a busca em PROFUNDIDADE e
-    retorna uma lista de ações que leva do
-    estado recebido até o objetivo ("12345678_").
-    Caso não haja solução a partir do estado recebido, retorna None
-    :param estado: str
-    :return:
-
-
-    # substituir a linha abaixo pelo seu codigo
-    raise NotImplementedError
   
-  procedure DFS_iterative(G, v) is
-    let S be a stack
-    S.push(v)
-    while S is not empty do
-        v = S.pop()
-        if v is not labeled as discovered then
-            label v as discovered
-            for all edges from v to w in G.adjacentEdges(v) do 
-                S.push(w)
-
-"""
     S = []
-    visitados = []
+    explorados = []
     nodo_inicial = Nodo(estado,0,0,0)
     S.append(nodo_inicial)
     while S:
         v = S.pop()
         print(v.estado)
-        if v not in visitados:
-            visitados.append(v)
+        if v not in explorados:
+            explorados.append(v)
             lista_sucessores = expande(v)
         
         for sucessor in reversed(lista_sucessores):
@@ -237,70 +178,63 @@ def astar_manhattan(estado):
 
 
 
-def esquerda(estado):
-    i = estado.find("_")
-    estado = list(estado)
-    if(i == 0 or i == 3 or i == 6):  #nessas posições não vai mais para esquerda
-        estado = ''.join(estado)
-        return str(estado)
-        
+def esquerda(Lestado,posunderline):
+    mov = "esquerda"
+    posicoes_sem_movimento = [0,3,6]
+    auxLestado = Lestado[:]
+    if posunderline in posicoes_sem_movimento:
+        return None
     else:
-        aux = estado[i]
-        aux2 = estado[i-1]
-        estado[i] = aux2
-        estado[i-1] = aux
-        estado = ''.join(estado)
-        return str(estado)
+        auxLestado[posunderline] = auxLestado[posunderline-1]
+        auxLestado[posunderline-1] = "_"
+        estado = "".join(auxLestado)
+        return (mov,estado)
     
 
 
-def direita(estado):
-    i = estado.find("_")
-    estado = list(estado)
-    if(i == 2 or i == 5 or i == 8):
-        estado = ''.join(estado)
-        return str(estado)
-        
+def direita(Lestado,posunderline):
+    mov = "direita"
+    posicoes_sem_movimento = [2,5,8]
+    auxLestado = Lestado[:]
+    if posunderline in posicoes_sem_movimento:
+        return None
     else:
-        aux = estado[i]
-        aux2 = estado[i+1]
-        estado[i] = aux2
-        estado[i+1] = aux
-        estado = ''.join(estado)
-        return str(estado)
+        auxLestado[posunderline] = auxLestado[posunderline+1]
+        auxLestado[posunderline+1] = "_"
+        estado = "".join(auxLestado)
+        return (mov,estado)
+
 
 #não sei se ta certa
-def abaixo(estado):
-    i = estado.find("_")
-    if(i == 6 or i == 7 or i == 8):
-        estado = ''.join(estado)
-        return str(estado)
+def abaixo(Lestado,posunderline):
+    mov = "abaixo"
+    posicoes_sem_movimento = [6,7,8]
+    auxLestado = Lestado[:]
+    if posunderline in posicoes_sem_movimento:
+        return None
     else:
-        estado = list(estado)
-        aux = estado[i]
-        aux2 = estado[i+3]
-        estado[i] = aux2
-        estado[i+3] = aux
-        estado = ''.join(estado)
-        return str(estado)
+        auxLestado[posunderline] = auxLestado[posunderline+3]
+        auxLestado[posunderline+3] = "_"
+        estado = "".join(auxLestado)
+        return (mov,estado)
 
-def acima(estado):
-    i = estado.find("_")
-    if(i == 0 or i == 1 or i == 2):
-        estado = ''.join(estado)
-        return str(estado)
+def acima(Lestado,posunderline):
+    mov = "acima"
+    posicoes_sem_movimento = [0,1,2]
+    auxLestado = Lestado[:]
+    if posunderline in posicoes_sem_movimento:
+        return None
     else:
-        estado = list(estado)
-        aux = estado[i]
-        aux2 = estado[i-3]
-        estado[i] = aux2
-        estado[i-3] = aux
-        estado = ''.join(estado)
-        return str(estado)
+        auxLestado[posunderline] = auxLestado[posunderline-3]
+        auxLestado[posunderline-3] = "_"
+        estado = "".join(auxLestado)
+        return (mov,estado)
+
+
 
 
 if __name__ == "__main__":
   nodo_inicial = Nodo(estado_inicial,0,0,0)
   bfs_nodes=bfs(estado_inicial)
-  for n in bfs_nodes:
-    n.print_nodo()
+  #for n in bfs_nodes:
+  #  n.print_nodo()
