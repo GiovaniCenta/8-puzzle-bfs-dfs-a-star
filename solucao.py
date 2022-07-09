@@ -204,7 +204,39 @@ def astar_hamming(estado):
     :return:
     """
     # substituir a linha abaixo pelo seu codigo
+    t1 = time.time()
+    Nexpandidos = 0
+    fronteira = []
+    explorado = set()
+    nodo_inicial = Nodo(estado,None,None,1)
+    nodo = Nodo(estado,None,None,1)
+    fronteira.append(nodo_inicial)
+    nodoMenorCusto = nodo_inicial
+    menorCusto=1000
+    while fronteira:
+        dist_haming = hamming_distance(estado.replace("_"),'')
+        
+       
+        if nodoAtual.estado == "12345678_":
+            caminho = percorreCaminho(nodoAtual)
+            t2 = time.time()
+            tempo = t2 - t1
+            algoritmo = "astar_hamming"
+            custo = len(caminho)
+            printa_resultado(algoritmo,tempo,Nexpandidos,custo)
+            return caminho
 
+        """
+        Expande o de menor custo + h(n)
+        percorre todos os nodos na fronteira pra ver o qual
+        """
+        while nodo in fronteira:
+            if (nodo.custo+dist_haming)<menorCusto:
+                nodoAtual = nodo
+                menorCusto = nodo.custo
+                
+        if nodoAtual.estado not in explorado:
+            explorado
    
 
 def astar_manhattan(estado):
