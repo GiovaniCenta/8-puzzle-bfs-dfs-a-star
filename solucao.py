@@ -121,6 +121,18 @@ def hamming_distance(s1, s2):
     return sum(ch1 != ch2 for ch1, ch2 in zip(s1, s2))
 
 #########################################################
+
+def hasSolution(string):
+	inversions = 0
+	for i in range (0, 9):
+		for j in range (i+1,9):
+			if string[i] != "_" and string[j] != "_" and string[i] and string[j] < string[i]:
+				inversions += 1
+	if inversions % 2 == 0:
+		return 1
+	else:
+		return 0
+
 def bfs(estado):
     
     t1 = time.time()
