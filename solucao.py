@@ -83,7 +83,9 @@ def movimenta(Lestado,tipo_mov,posicoes_sem_movimento,movimento):
         return (tipo_mov,estado)
 
 
-def hamming_distance(s1, s2):
+def hamming_distance(s1):
+    s1 = s1.replace("_",'')
+    s2 = "12345678"
     assert len(s1) == len(s2)
     return sum(ch1 != ch2 for ch1, ch2 in zip(s1, s2))
 
@@ -184,48 +186,55 @@ def dfs(estado):
   
   
 def astar_hamming(estado):
-    """"
-    Recebe um estado (string), executa a busca A* com h(n) = soma das distâncias de Hamming e
-    retorna uma lista de ações que leva do
-    estado recebido até o objetivo ("12345678_").
-    Caso não haja solução a partir do estado recebido, retorna None
-    :param estado: str
-    :return:
-    """
-    # substituir a linha abaixo pelo seu codigo
     t1 = time.time()
     Nexpandidos = 0
-    fronteira = []
+    algoritmo = "A* Hamming"
+    fronteira = PriorityQueue()
     explorado = set()
     nodo_inicial = Nodo(estado,None,None,1)
-    nodo = Nodo(estado,None,None,1)
-    fronteira.append(nodo_inicial)
-    nodoMenorCusto = nodo_inicial
-    menorCusto=1000
-    while fronteira:
-        dist_haming = hamming_distance(estado.replace("_"),'')
+    #tupla -> (nodo,custo)
+    fronteira.put((nodo_inicial,0))
+    
+    
+    
+    #print(fronteira)
+    
+    
+    while fronteira.empty() == False:     
+        nodoAtual = fronteira.get()[0]
         
-       
+        
+        #print(fronteira.empty())
+        
+        
+        
+
         if nodoAtual.estado == "12345678_":
+            
             caminho = percorreCaminho(nodoAtual)
+            #print(caminho)
             t2 = time.time()
             tempo = t2 - t1
-            algoritmo = "astar_hamming"
+            algoritmo = "A* Hamming"
             custo = len(caminho)
             printa_resultado(algoritmo,tempo,Nexpandidos,custo)
             return caminho
 
-        """
-        Expande o de menor custo + h(n)
-        percorre todos os nodos na fronteira pra ver o qual
-        """
-        while nodo in fronteira:
-            if (nodo.custo+dist_haming)<menorCusto:
-                nodoAtual = nodo
-                menorCusto = nodo.custo
-                
+            
+            
         if nodoAtual.estado not in explorado:
-            explorado
+            explorado.add(nodoAtual.estado)
+            sucessores = expande(nodoAtual)
+            Nexpandidos = Nexpandidos + len(sucessores)
+            for suc in sucessores:
+                f = suc.custo
+                g = hamming_distance(suc.estado)
+                h = f + g
+                fronteira.put((suc, h))
+    
+    print("Não há solução no algoritmo " + algoritmo + " para o estado inicial" + estado)
+    return None
+			    
    
 
 
