@@ -234,16 +234,25 @@ def calculaManhattan(estado):
     
     distanciaManhattan = 0
     
-    for i,PosUnderline in enumerate(estado):
-        PosUnderline = achaunderline(estado)
+    
+    #   num,char(0,1,2..._)
+    for i,carac in enumerate(estado):
+        #carac = achaunderline(estado)
 
-        x_0 = int(i/ 3)
-        y_0 = i % 3
+        #pos horizontal e vertical obj
+        x = int(i/ 3)
+        y = i % 3
+        #pos real
+        pos_real = "12345678_".find(carac)
+        #print(pos_real)
+        #pos horizontal e vertical reais
+        x_0 = int(pos_real /3)
+        y_0 = pos_real % 3
+        distanciaManhattan  += abs(x-x_0) + abs(y - y_0)
+
+
+
         
-        x = int(PosUnderline /3)
-        
-        y = PosUnderline % 3
-        distanciaManhattan  += abs(x_0-x) + abs(y_0 - y)
     return distanciaManhattan 
 
 
