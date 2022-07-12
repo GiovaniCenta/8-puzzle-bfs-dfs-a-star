@@ -6,6 +6,7 @@ lista_nodos = []
 lista_esq = []
 lista_dir = []
 lista_abaixo = []
+from collections import deque
 
 class Nodo:
     
@@ -31,6 +32,7 @@ def achaunderline(Lestado):
 def sucessor(estado):
     #tem que transformar em lista, problemas com string
     Lestado = list(estado)
+    #movimenta(Lestado,tipo_mov,posicoes_sem_movimento,movimento)
     sucessores = [movimenta(Lestado,"esquerda",[0,3,6],-1), movimenta(Lestado,"direita",[2,5,8],+1),movimenta(Lestado,"acima",[0,1,2],-3),movimenta(Lestado,"abaixo",[6,7,8],+3)]
     #retirar os Nones -> movimentos inválidos
     sucessores = list(filter(None, sucessores))
@@ -68,59 +70,6 @@ def printa_resultado(algoritmo,tempo,Nexpandidos,custo):
     print("Custo: " + str(custo))
 
 
-def esquerda(Lestado,posunderline):
-    mov = "esquerda"
-    posicoes_sem_movimento = [0,3,6]
-    auxLestado = Lestado[:]
-    if posunderline in posicoes_sem_movimento:
-        return None
-    else:
-        auxLestado[posunderline] = auxLestado[posunderline-1]
-        auxLestado[posunderline-1] = "_"
-        estado = "".join(auxLestado)
-        return (mov,estado)
-    
-
-
-def direita(Lestado,posunderline):
-    mov = "direita"
-    posicoes_sem_movimento = [2,5,8]
-    auxLestado = Lestado[:]
-    if posunderline in posicoes_sem_movimento:
-        return None
-    else:
-        auxLestado[posunderline] = auxLestado[posunderline+1]
-        auxLestado[posunderline+1] = "_"
-        estado = "".join(auxLestado)
-        return (mov,estado)
-
-
-#não sei se ta certa
-def abaixo(Lestado,posunderline):
-    mov = "abaixo"
-    posicoes_sem_movimento = [6,7,8]
-    auxLestado = Lestado[:]
-    if posunderline in posicoes_sem_movimento:
-        return None
-    else:
-        auxLestado[posunderline] = auxLestado[posunderline+3]
-        auxLestado[posunderline+3] = "_"
-        estado = "".join(auxLestado)
-        return (mov,estado)
-
-def acima(Lestado,posunderline):
-    mov = "acima"
-    posicoes_sem_movimento = [0,1,2]
-    auxLestado = Lestado[:]
-    if posunderline in posicoes_sem_movimento:
-        return None
-    else:
-        auxLestado[posunderline] = auxLestado[posunderline-3]
-        auxLestado[posunderline-3] = "_"
-        estado = "".join(auxLestado)
-        return (mov,estado)
-
-
 def movimenta(Lestado,tipo_mov,posicoes_sem_movimento,movimento):
         
     posunderline = achaunderline(Lestado)
@@ -154,6 +103,7 @@ def hasSolution(string):
 def bfs(estado):
     
     t1 = time.time()
+    algoritmo = "BFS"
     Nexpandidos = 0
     fronteira = []
     explorado = set()
@@ -164,7 +114,7 @@ def bfs(estado):
     #print(fronteira)
     
     
-    while fronteira:          # Creating loop to visit each node
+    while fronteira:         
         nodoAtual = fronteira[0]
         fronteira.pop(0)
 
@@ -173,7 +123,7 @@ def bfs(estado):
             #print(caminho)
             t2 = time.time()
             tempo = t2 - t1
-            algoritmo = "BFS"
+            
             custo = len(caminho)
             printa_resultado(algoritmo,tempo,Nexpandidos,custo)
             return caminho
@@ -184,36 +134,40 @@ def bfs(estado):
             explorado.add(nodoAtual.estado)
             sucessores = expande(nodoAtual)
             Nexpandidos = Nexpandidos + len(sucessores)
-            #for suc in sucessores:
-            #    fronteira.append(suc)
+           
             fronteira.extend(sucessores)
+
+    print("Não há solução no algoritmo " + algoritmo + " para o estado inicial" + estado)
+    return None
       
+
+
+
+
 def dfs(estado):
     t1= time.time()
+    algoritmo = "DFS"
     NExpandidos = 0
     fronteira = []
-    expandidos = set()
-    nodoAtual = Nodo(estado,None,None,1)
-    expandidos.add(nodoAtual.estado)
+    explorados = set()
     
+    if(hasSolution(estado) == 0):
+        print("Não há solução DFS para o estado: " + estado )
+        return None
 
-    #tem que fazer a funçao de ve se tem solução ou não
-
+    nodoInicial = Nodo(estado,None,None,1)
+    fronteira.append(nodoInicial)
+    
     while fronteira:
-        sucessores = expande(nodoAtual)
-        NExpandidos = NExpandidos + len(sucessores)
-
-
-        for suc in sucessores:
-            if suc.estado not in expandidos:
-                fronteira.append(suc)
-
-        
         nodoAtual = fronteira.pop()
-        expandidos.add(nodoAtual.estado)
-        
 
-        if(nodoAtual.estado == "12345678_"):
+        if nodoAtual.estado not in explorados:
+            sucessores = expande(nodoAtual)
+            NExpandidos = NExpandidos + len(sucessores)
+            explorados.add(nodoAtual.estado)
+            fronteira.extend(sucessores)
+
+        if nodoAtual.estado == "12345678_":
             caminho = percorreCaminho(nodoAtual)
             #print(caminho)
             t2 = time.time()
@@ -222,6 +176,11 @@ def dfs(estado):
             custo = len(caminho)
             printa_resultado(algoritmo,tempo,NExpandidos,custo)
             return caminho
+            
+            
+    print("Não há solução no algoritmo " + algoritmo + " para o estado inicial" + estado)
+    return None
+
   
   
 def astar_hamming(estado):
@@ -293,7 +252,7 @@ def calculaManhattan(estado):
 def astar_manhattan(estado):
     t1 = time.time()
     Nexpandidos = 0
-    
+    algoritmo = "A* Manhattan"
     fronteira = PriorityQueue()
     explorado = set()
     nodo_inicial = Nodo(estado,None,None,1)
@@ -305,7 +264,7 @@ def astar_manhattan(estado):
     #print(fronteira)
     
     
-    while fronteira.empty() == False:       # Creating loop to visit each node
+    while fronteira.empty() == False:     
         nodoAtual = fronteira.get()[0]
         
         
@@ -336,9 +295,12 @@ def astar_manhattan(estado):
                 g = calculaManhattan(suc.estado)
                 h = f + g
                 fronteira.put((suc, h))
+    
+    print("Não há solução no algoritmo " + algoritmo + " para o estado inicial" + estado)
+    return None
 			    
 
-
+    
 
 
 
@@ -346,6 +308,8 @@ def astar_manhattan(estado):
 if __name__ == "__main__":
   nodo_inicial = Nodo(estado_inicial,0,0,0)
   astar_manhattan(estado_inicial)
+  bfs(estado_inicial)
+  dfs(estado_inicial)
   #estadofinal="12345678"
   #print(estado_inicial.replace("_",''))
   #print(hamming_distance(estado_inicial.replace("_",''),estadofinal))
